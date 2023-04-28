@@ -1,5 +1,6 @@
 import { reactive } from "vue";
 import { defineStore } from "pinia";
+import { AxiosError } from "axios";
 
 import api from "@/api";
 
@@ -21,14 +22,16 @@ export const useAuthStore = defineStore("authStore", () => {
     try {
       if (localStorage.getItem("token")) {
         state.isLoading = true;
-        const { data } = await api.get("auth/whoami");
+        const { data } = await api.get("auth/whoami1");
 
         state.user.id = data.authUser.id;
         state.user.login = data.authUser.login;
         state.user.isAuth = true;
       }
-    } catch (error: any) {
-      state.responseMessage = error.response.data.message;
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        state.responseMessage = error.message;
+      }
     } finally {
       state.isLoading = false;
     }
@@ -58,8 +61,10 @@ export const useAuthStore = defineStore("authStore", () => {
         state.user.isAuth = true;
         localStorage.setItem("token", data.token);
       }
-    } catch (error: any) {
-      state.responseMessage = error.response.data.message;
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        state.responseMessage = error.message;
+      }
     } finally {
       state.isLoading = false;
     }
@@ -70,8 +75,10 @@ export const useAuthStore = defineStore("authStore", () => {
       state.error = null;
       state.isLoading = true;
       await api.patch("users", formData);
-    } catch (error: any) {
-      state.responseMessage = error.response.data.message;
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        state.responseMessage = error.message;
+      }
     } finally {
       state.isLoading = false;
     }

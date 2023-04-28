@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onUnmounted, ref, computed } from "vue";
+import { onUnmounted, ref } from "vue";
 
 import { useAuthStore } from "@/stores/authStore";
 import { useDialogStore } from "@/stores/dialogStore";
@@ -9,21 +9,20 @@ const authStore = useAuthStore();
 const dialogStore = useDialogStore();
 const userStore = useUserStore();
 
-const submitDefaultValue = computed(() => {
-  if (dialogStore.state.type === "SIGNUP") {
-    return "Зарегистрироваться";
-  } else if (dialogStore.state.type === "SIGNIN") {
-    return "Войти";
-  }
-  return "Отредактировать";
-});
-
 const errorsValid = ref<string[]>([]);
-const submitValue = ref(submitDefaultValue);
 const login = ref("");
 const email = ref("");
 const password = ref("");
-console.log(password.value);
+const submitValue = ref(
+  (() => {
+    if (dialogStore.state.type === "SIGNUP") {
+      return "Зарегистрироваться";
+    } else if (dialogStore.state.type === "SIGNIN") {
+      return "Войти";
+    }
+    return "Отредактировать";
+  })(),
+);
 
 const checkForm = async (event: Event) => {
   event.preventDefault();
@@ -34,15 +33,12 @@ const checkForm = async (event: Event) => {
     if (!email.value) {
       errorsValid.value.push("Email обязательный.");
     }
-
     if (!validEmail(email.value)) {
       errorsValid.value.push("Требуется корректный email.");
     }
-
     if (!password.value) {
       errorsValid.value.push("Пароль обязательный.");
     }
-
     if (password.value.length < 4) {
       errorsValid.value.push("Пароль не меньше 4 символов.");
     }
@@ -52,7 +48,6 @@ const checkForm = async (event: Event) => {
     if (!login.value) {
       errorsValid.value.push("Логин обязательный.");
     }
-
     if (login.value.length < 4 || login.value.length > 15) {
       errorsValid.value.push("Логин не меньше 4 символов и не больше 30.");
     }
@@ -72,20 +67,16 @@ const checkForm = async (event: Event) => {
         _password: password.value,
       });
     }
-
     if (dialogStore.state.type === "SIGNIN") {
       await authStore.userSign({
         _email: email.value,
         _password: password.value,
       });
-
       if (authStore.state.user.isAuth) dialogStore.state.visible = false;
     }
-
     if (dialogStore.state.type === "EDIT_PROFILE") {
       if (login.value || img) {
         const formData = new FormData();
-
         formData.append("login", login.value);
         formData.append("file", String(img));
         await authStore.editUser(formData);
@@ -94,7 +85,6 @@ const checkForm = async (event: Event) => {
             userStore.state.login = login.value;
             authStore.state.user.login = login.value;
           }
-
           userStore.getUserById(userStore.state.id);
           dialogStore.state.visible = false;
         }

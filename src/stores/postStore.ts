@@ -74,7 +74,6 @@ export const usePostStore = defineStore("postStore", () => {
     state.isLoading = true;
     try {
       const { data } = await api.get("news");
-
       state.posts = data;
     } catch (err) {
       state.error = err;
@@ -85,7 +84,6 @@ export const usePostStore = defineStore("postStore", () => {
 
   const newsAdd = async (formData: FormData) => {
     state.error = null;
-    console.log(formData);
     state.isLoading = true;
     try {
       await api.post("news", formData);

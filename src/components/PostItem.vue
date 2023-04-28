@@ -14,15 +14,15 @@ const props = defineProps({
   },
 });
 
-const userStore = useUserStore();
-const postStore = usePostStore();
+const { userAvatarDefault } = useUserStore();
+const { getPostImg } = usePostStore();
 
-const postImg = postStore.getPostImg(props.post.images);
+const postImg = getPostImg(props.post.images);
 
 const userAvatar = computed(() =>
   props.post.user.avatar
     ? import.meta.env.VITE_VUE_APP_BASE_URL_AVATAR + props.post.user.avatar
-    : userStore.userAvatarDefault,
+    : userAvatarDefault,
 );
 </script>
 
@@ -36,13 +36,9 @@ const userAvatar = computed(() =>
     <div v-if="post.user" class="card-body">
       <div class="topic">
         <img :src="userAvatar" class="avatar card-img-top" />
-        <a
-          href="#"
-          class="card-link"
-          @click="$router.push(`/user/${post.user.id}`)"
-        >
+        <router-link class="card-link" :to="`/user/${post.user.id}`">
           {{ post.user.login }}
-        </a>
+        </router-link>
       </div>
     </div>
     <img :src="postImg" class="card-img-top" style="border-radius: 0" />

@@ -5,12 +5,15 @@ module.exports = {
   env: {
     node: true,
   },
+  root: true,
   globals: {
     defineProps: "readonly",
     defineEmits: "readonly",
     withDefaults: "readonly",
   },
-  root: true,
+  rules: {
+    "no-console": "warn",
+  },
   extends: [
     "plugin:vue/vue3-essential",
     "plugin:vue/vue3-strongly-recommended",

@@ -4,7 +4,6 @@ import { RouterView, useRouter } from "vue-router";
 import MyNavbar from "@/components/MyNavbar.vue";
 
 const router = useRouter();
-
 router.push("/news");
 </script>
 

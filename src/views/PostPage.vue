@@ -1,25 +1,20 @@
 <script setup lang="ts">
-import { onUpdated, watch, computed } from "vue";
+import { onUpdated, watch } from "vue";
 
 import { usePostStore } from "@/stores/postStore";
 import { useDialogStore } from "@/stores/dialogStore";
 
 import PostList from "@/components/PostList.vue";
 
+import { useVModel } from "@/hooks";
+
 const postStore = usePostStore();
 const dialogStore = useDialogStore();
 
+const searchQuery = useVModel(postStore.state, "searchQuery");
+const selectedSort = useVModel(postStore.state, "selectedSort");
+
 postStore.newsGet();
-
-const searchQuery = computed({
-  get: () => postStore.state.searchQuery,
-  set: (value) => (postStore.state.searchQuery = value),
-});
-
-const selectedSort = computed({
-  get: () => postStore.state.selectedSort,
-  set: (value) => (postStore.state.selectedSort = value),
-});
 
 watch(
   () => postStore.state.error,

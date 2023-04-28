@@ -10,6 +10,8 @@ import UserForm from "@/components/UserForm.vue";
 import PostList from "@/components/PostList.vue";
 import AddNews from "@/components/AddNews.vue";
 
+import { useVModel } from "@/hooks";
+
 const userStore = useUserStore();
 const dialogStore = useDialogStore();
 const authStore = useAuthStore();
@@ -17,10 +19,7 @@ const authStore = useAuthStore();
 const id = ref(Number(useRoute().params.id));
 const isMyProfile = computed(() => authStore.state.user.id === id.value);
 
-const show = computed({
-  get: () => dialogStore.state.visible,
-  set: (value) => (dialogStore.state.visible = value),
-});
+const show = useVModel(dialogStore.state, "visible");
 
 userStore.getUserById(id.value);
 const userAvatar = computed(() =>

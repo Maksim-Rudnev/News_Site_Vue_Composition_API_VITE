@@ -8,10 +8,23 @@ import { useUserStore } from "@/stores/userStore";
 
 import UserForm from "@/components/UserForm.vue";
 
+import { useVModel } from "@/hooks";
+
 const dialogStore = useDialogStore();
 const authStore = useAuthStore();
 const postStore = usePostStore();
 const userStore = useUserStore();
+
+const show = useVModel(dialogStore.state, "visible");
+const dialogType = useVModel(dialogStore.state, "type");
+
+const getError = computed(() => {
+  if (authStore.state.responseMessage) return authStore.state.responseMessage;
+  if (postStore.state.error) return postStore.state.error;
+  if (userStore.state.error) return userStore.state.error;
+
+  return null;
+});
 
 const signOut = () => {
   authStore.state.user.id = 0;
@@ -20,18 +33,6 @@ const signOut = () => {
   localStorage.removeItem("token");
 };
 
-const getError = computed(() => {
-  if (postStore.state.error) return postStore.state.error;
-  if (userStore.state.error) return userStore.state.error;
-
-  return null;
-});
-
-const show = computed({
-  get: () => dialogStore.state.visible,
-  set: (value) => (dialogStore.state.visible = value),
-});
-
 onBeforeMount(() => {
   authStore.whoAmI();
 });
@@ -39,14 +40,11 @@ onBeforeMount(() => {
 
 <template>
   <div class="navbar">
-    <my-button @click="$router.push('/news')"> Новости </my-button>
+    <my-button @click="$router.push('/news')">Новости</my-button>
     <div class="right-panel">
       <my-button
         v-if="!authStore.state.user.isAuth"
-        @click="
-          (dialogStore.state.visible = true),
-            (dialogStore.state.type = 'SIGNUP')
-        "
+        @click="(show = true), (dialogType = 'SIGNUP')"
       >
         Регистрация
       </my-button>
@@ -59,25 +57,20 @@ onBeforeMount(() => {
       </my-button>
       <my-button
         v-if="!authStore.state.user.isAuth"
-        @click="
-          (dialogStore.state.visible = true),
-            (dialogStore.state.type = 'SIGNIN')
-        "
+        @click="(show = true), (dialogType = 'SIGNIN')"
       >
         Войти
       </my-button>
-      <my-button v-else @click="signOut()"> Выйти </my-button>
+      <my-button v-else @click="signOut"> Выйти </my-button>
     </div>
   </div>
   <my-dialog
-    v-if="
-      dialogStore.state.type === 'SIGNUP' || dialogStore.state.type === 'SIGNIN'
-    "
+    v-if="dialogType === 'SIGNUP' || dialogType === 'SIGNIN'"
     v-model:show="show"
   >
     <user-form />
   </my-dialog>
-  <my-dialog v-if="dialogStore.state.type === 'ERROR'" v-model:show="show">
+  <my-dialog v-if="dialogType === 'ERROR'" v-model:show="show">
     <h1 style="color: brown">
       {{ getError }}
     </h1>

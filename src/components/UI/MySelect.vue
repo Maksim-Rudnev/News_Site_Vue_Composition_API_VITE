@@ -1,5 +1,6 @@
 <script lang="ts">
 import type { ISortOptions } from "@/interfaces";
+
 export default {
   name: "MySelect",
 };
